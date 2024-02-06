@@ -9,6 +9,7 @@
 #include "db_parser.h"
 #include "product_parser.h"
 #include "util.h"
+#include "mydatastore.h"
 
 using namespace std;
 struct ProdNameSorter {
@@ -29,7 +30,7 @@ int main(int argc, char* argv[])
      * Declare your derived DataStore object here replacing
      *  DataStore type to your derived type
      ****************/
-    DataStore ds;
+    MyDataStore ds;
 
 
 
@@ -98,12 +99,46 @@ int main(int argc, char* argv[])
                     ofile.close();
                 }
                 done = true;
-            }
+                break;
+            } 
 	    /* Add support for other commands here */
-
-
-
-
+          //adding product to user's cart
+            else if( cmd == "ADD"){
+              string user;
+              unsigned int hit_result_index;
+              if(ss >> user) {
+                if(ss >> hit_result_index){
+                  hit_result_index -= 1;
+                  if(hits.size() != 0 && (0 <= hit_result_index) && (hits.size() > hit_result_index)){
+                    ds.addcart(convToLower(user), hits[hit_result_index]);
+                  } else {
+                    cout << "Invalid request" << endl;
+                  }
+                } else {
+                  cout << "Invalid request" << endl;
+                }
+              } else {
+                cout << "Invalid request" << endl;
+              }
+            }
+            //viewing user's cart
+            else if ( cmd == "VIEWCART" ){
+              string username;
+              if(ss >> username) {
+                ds.viewcart(username);
+              } else {
+                cout << "Invalid request" << endl;
+              }
+            }
+            //buying items in user's cart
+            else if ( cmd == "BUYCART" ){
+              string username;
+              if(ss >> username){
+                ds.buycart(username);
+              } else {
+                cout << "Invaldi request" << endl;
+              }
+            }
             else {
                 cout << "Unknown command" << endl;
             }
